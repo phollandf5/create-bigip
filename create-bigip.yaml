@@ -1,0 +1,38 @@
+- name: CREATE BIG-IP
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+  - name: CREATE ANSIBLE CFT DEPLOYMENT
+    cloudformation:
+      #stack_name: "{{ stack_name }}"
+      state: present
+      #region: "{{ aws_region }}"
+      disable_rollback: true
+      #template_url: "https://s3.amazonaws.com/f5-cft/f5-existing-stack-payg-2nic-bigip.template"
+      template_parameters:
+        group:  "f5group"
+        declarationUrl:  "none"
+        Vpc: "{{ vpc_id }}"
+        managementSubnetAz1:  "{{ vpc_subnet_ids.mgmt_a }}"
+        subnet1Az1:  "{{ vpc_subnet_ids.traffic_a }}"
+        restrictedSrcAddress: "0.0.0.0/0"
+        restrictedSrcAddressApp: "0.0.0.0/0"
+        sshKey:  "{{ sshKey }}"
+        environment:  "Demo"
+        application:  "f5app"
+        customImageId:  "OPTIONAL"
+        imageName:  "Best25Mbps"
+        ntpServer:  "0.pool.ntp.org"
+        costcenter:  "SALES EMEA-UK 4261"
+        owner:  "{{ uk_se_name }}"
+        timezone:  "UTC"
+        instanceType:  "m5.xlarge"
+        allowUsageAnalytics:  "Yes"
+      tags:
+        automated: "{{ automation_tool }}"
+        stack: "{{ stack_name }}"
+        UK-SE: "{{ uk_se_name }}"
+    register: result 
